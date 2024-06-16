@@ -1,0 +1,388 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GeneratorImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cn.hit.sw.lab1.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: GeneratorImpl (cn.hit.sw.lab1.impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GeneratorImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (2/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25.8%
+  </span>
+  <span class="absValue">
+    (17/66)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    30.4%
+  </span>
+  <span class="absValue">
+    (41/135)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cn.hit.sw.lab1.impl;
+&nbsp;
+&nbsp;import cn.hit.sw.entity.MyGraph;
+&nbsp;import cn.hit.sw.lab1.Generator;
+&nbsp;import org.graphstream.graph.Edge;
+&nbsp;import org.graphstream.graph.Node;
+&nbsp;
+&nbsp;
+&nbsp;import javax.swing.*;
+&nbsp;import java.awt.*;
+&nbsp;import java.io.FileWriter;
+&nbsp;import java.io.IOException;
+&nbsp;import java.util.*;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;
+&nbsp;@SuppressWarnings(&quot;checkstyle:Indentation&quot;)
+&nbsp;public class GeneratorImpl implements Generator {
+&nbsp;
+&nbsp;    MyGraph graph;
+&nbsp;    private Node current;
+&nbsp;    private Set&lt;Edge&gt; visitedEdges;
+<b class="fc">&nbsp;    Random random = new Random();</b>
+&nbsp;
+<b class="fc">&nbsp;    public GeneratorImpl(MyGraph graph) {</b>
+<b class="fc">&nbsp;        this.graph = graph;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public MyGraph getGraph() {
+<b class="nc">&nbsp;        return this.graph;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void showDirectedGraph(MyGraph g) {
+<b class="nc">&nbsp;        for (Edge edge : graph.edges().toList()) {</b>
+<b class="nc">&nbsp;            String source = edge.getSourceNode().getId();</b>
+<b class="nc">&nbsp;            String target = edge.getTargetNode().getId();</b>
+<b class="nc">&nbsp;            int weight = Integer.parseInt(edge.getAttribute(&quot;ui.label&quot;).toString());</b>
+<b class="nc">&nbsp;            System.out.println(source + &quot;-&gt;&quot; + target + &quot;, 权重: &quot; + weight);</b>
+&nbsp;        }
+&nbsp;        // 控制台打印
+<b class="nc">&nbsp;        this.graph.myDisplay(this.graph);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /** 输入的word1或word2如果不在图中出现，则输出“No word1 or word2 in the graph!”
+&nbsp;     * 如果不存在桥接词，则输出“No bridge words from word1 to word2!”
+&nbsp;     * 如果存在一个或多个桥接词，则输出“The bridge words from word1 to word2 are: xxx, xxx, and xxx.”
+&nbsp;     **/
+&nbsp;    @Override
+&nbsp;    public String queryBridgeWords(String word1, String word2) {
+<b class="nc">&nbsp;        if(this.graph.getNode(word1) == null || this.graph.getNode(word2) == null){</b>
+<b class="nc">&nbsp;            return &quot;No word1 or word2 in the graph!&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        List&lt;String&gt; stringList = queryBridgeWordsLists(word1, word2);</b>
+&nbsp;
+<b class="nc">&nbsp;        if(stringList.isEmpty()) {</b>
+<b class="nc">&nbsp;            return &quot;No bridge words from &quot; + word1 + &quot; to &quot; + word2 + &quot;!&quot;;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        StringBuilder stringBuilder = new StringBuilder();</b>
+<b class="nc">&nbsp;        stringBuilder.append(&quot;The bridge words from &quot;).append(word1).append(&quot; to &quot;).append(word2).append(&quot; are:&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        if(stringList.size() == 1) {</b>
+<b class="nc">&nbsp;            stringBuilder.append(stringList.get(0)).append(&quot;.&quot;);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            for(int i = 0 ; i &lt; stringList.size() ; i++){</b>
+<b class="nc">&nbsp;                if(i == stringList.size() - 1) {</b>
+<b class="nc">&nbsp;                    stringBuilder.append(&quot;and &quot;).append(stringList.get(i)).append(&quot;.&quot;);</b>
+&nbsp;                    break;
+&nbsp;                }
+<b class="nc">&nbsp;                stringBuilder.append(stringList.get(i)).append(&quot;, &quot;);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return stringBuilder.toString();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private List&lt;String&gt; queryBridgeWordsLists(String word1, String word2) {
+<b class="nc">&nbsp;        List&lt;String&gt; stringList = new LinkedList&lt;&gt;();</b>
+<b class="nc">&nbsp;        if(this.graph.getNode(word1) == null || this.graph.getNode(word2) == null){</b>
+<b class="nc">&nbsp;            return stringList;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        Node node1 = this.graph.getNode(word1);</b>
+<b class="nc">&nbsp;        Node node2 = this.graph.getNode(word2);</b>
+<b class="nc">&nbsp;        node1.leavingEdges()</b>
+<b class="nc">&nbsp;                .forEach(edge -&gt; {</b>
+<b class="nc">&nbsp;                    Node intermediate = edge.getTargetNode();</b>
+<b class="nc">&nbsp;                    intermediate.leavingEdges()</b>
+<b class="nc">&nbsp;                            .filter(e -&gt; e.getTargetNode().equals(node2))</b>
+<b class="nc">&nbsp;                            .forEach(e -&gt; stringList.add(intermediate.getId()));</b>
+&nbsp;                });
+<b class="nc">&nbsp;        return stringList;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String generateNewText(String inputText) {
+<b class="nc">&nbsp;        String[] words = inputText.toLowerCase().split(&quot; &quot;);</b>
+<b class="nc">&nbsp;        StringBuilder stringBuilder = new StringBuilder();</b>
+&nbsp;
+<b class="nc">&nbsp;        for(int i = 0; i &lt; (words.length - 1); i++) {</b>
+<b class="nc">&nbsp;            List&lt;String&gt; bridgeWordsLists = this.queryBridgeWordsLists(words[i], words[i + 1]);</b>
+&nbsp;
+<b class="nc">&nbsp;            if(!bridgeWordsLists.isEmpty()) {</b>
+<b class="nc">&nbsp;                stringBuilder.append(words[i]).append(&quot; &quot;);</b>
+<b class="nc">&nbsp;                stringBuilder.append(bridgeWordsLists.get(random.nextInt(bridgeWordsLists.size()))).append(&quot; &quot;);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                stringBuilder.append(words[i]).append(&quot; &quot;);</b>
+&nbsp;            }
+&nbsp;        }
+<b class="nc">&nbsp;        stringBuilder.append(words[words.length - 1]);</b>
+<b class="nc">&nbsp;        return stringBuilder.toString().trim();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String calcShortestPath(String word1, String word2) {
+&nbsp;
+<b class="nc">&nbsp;        if (graph.getNode(word1) == null &amp;&amp; graph.getNode(word2) == null) {</b>
+<b class="nc">&nbsp;            return &quot;One of the specified nodes does not exist.&quot;;</b>
+<b class="nc">&nbsp;        } else if(this.graph.getNode(word1) == null || this.graph.getNode(word2) == null) {</b>
+<b class="nc">&nbsp;            StringBuilder resultStr = new StringBuilder();</b>
+<b class="nc">&nbsp;            String word = (word1 != null ? word1 : word2);</b>
+<b class="nc">&nbsp;            List&lt;Node&gt; nodeList = this.graph.nodes().toList();</b>
+<b class="nc">&nbsp;            for(Node node : nodeList) {</b>
+<b class="nc">&nbsp;                String nodeId = node.getId();</b>
+<b class="nc">&nbsp;                if(!nodeId.equals(word)) {</b>
+<b class="nc">&nbsp;                    resultStr.append(&quot;to Node \&quot;&quot;).append(nodeId).append(&quot;\&quot;&quot;).append(findShortestPath(this.graph, word, nodeId)).append(&quot;\n&quot;);</b>
+&nbsp;                }
+&nbsp;            }
+<b class="nc">&nbsp;            return resultStr.toString();</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return findShortestPath(this.graph, word1, word2);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String findShortestPath(MyGraph graph, String startWord, String endWord) {
+<b class="fc">&nbsp;        Map&lt;Node, Integer&gt; distances = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        Map&lt;Node, Node&gt; predecessors = new HashMap&lt;&gt;();</b>
+<b class="fc">&nbsp;        PriorityQueue&lt;Node&gt; queue = new PriorityQueue&lt;&gt;(Comparator.comparingInt(distances::get));</b>
+&nbsp;
+&nbsp;        // 初始化距离和前驱
+<b class="fc">&nbsp;        for (Node node : graph) {</b>
+<b class="fc">&nbsp;            distances.put(node, Integer.MAX_VALUE);</b>
+<b class="fc">&nbsp;            predecessors.put(node, null);</b>
+<b class="fc">&nbsp;            node.setAttribute(&quot;ui.style&quot;, &quot;fill-color: black;&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        Node startNode = graph.getNode(startWord);</b>
+<b class="fc">&nbsp;        distances.put(startNode, 0);</b>
+<b class="fc">&nbsp;        queue.add(startNode);</b>
+&nbsp;
+&nbsp;        // 主循环
+<b class="fc">&nbsp;        while (!queue.isEmpty()) {</b>
+<b class="fc">&nbsp;            Node current = queue.poll();</b>
+<b class="fc">&nbsp;            if (current.getId().equals(endWord)) {</b>
+&nbsp;                break;
+&nbsp;            }
+&nbsp;
+<b class="fc">&nbsp;            for (Edge edge : current.leavingEdges().toList()) {</b>
+<b class="fc">&nbsp;                Node adjacent = edge.getOpposite(current);</b>
+<b class="fc">&nbsp;                int weight = Integer.parseInt(edge.getAttribute(&quot;ui.label&quot;).toString());</b>
+<b class="fc">&nbsp;                int distanceThroughCurrent = distances.get(current) + weight;</b>
+&nbsp;
+<b class="fc">&nbsp;                if (distanceThroughCurrent &lt; distances.get(adjacent)) {</b>
+<b class="fc">&nbsp;                    distances.put(adjacent, distanceThroughCurrent);</b>
+<b class="fc">&nbsp;                    predecessors.put(adjacent, current);</b>
+<b class="fc">&nbsp;                    queue.add(adjacent);</b>
+&nbsp;                }
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // 检查终点是否可达
+<b class="fc">&nbsp;        if (distances.get(graph.getNode(endWord)) == Integer.MAX_VALUE) {</b>
+<b class="fc">&nbsp;            return &quot;不可达&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // 回溯找到路径
+<b class="fc">&nbsp;        List&lt;Node&gt; path = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        Node step = graph.getNode(endWord);</b>
+<b class="fc">&nbsp;        while (predecessors.get(step) != null) {</b>
+<b class="fc">&nbsp;            path.add(step);</b>
+<b class="fc">&nbsp;            step = predecessors.get(step);</b>
+&nbsp;        }
+<b class="fc">&nbsp;        path.add(graph.getNode(startWord));</b>
+<b class="fc">&nbsp;        Collections.reverse(path);</b>
+&nbsp;
+&nbsp;        // 设置路径上的边为红色
+<b class="fc">&nbsp;        Node tmp = graph.getNode(endWord);</b>
+<b class="fc">&nbsp;        while (predecessors.get(tmp) != null) {</b>
+<b class="fc">&nbsp;            Node prev = predecessors.get(tmp);</b>
+<b class="fc">&nbsp;            Edge edge = prev.getEdgeBetween(tmp);</b>
+<b class="pc">&nbsp;            if (edge != null) {</b>
+<b class="fc">&nbsp;                edge.setAttribute(&quot;ui.style&quot;, &quot;fill-color: red;&quot;);</b>
+&nbsp;            }
+<b class="fc">&nbsp;            tmp = prev;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return &quot;Path total weight: &quot; + distances.get(graph.getNode(endWord));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void randomWalk() {
+&nbsp;
+&nbsp;
+<b class="nc">&nbsp;        current = graph.getNode(random.nextInt(graph.getNodeCount()));</b>
+<b class="nc">&nbsp;        visitedEdges = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;        StringBuilder path = new StringBuilder();</b>
+&nbsp;
+&nbsp;        // 创建 JFrame 实例
+<b class="nc">&nbsp;        JFrame frame = new JFrame(&quot;随机游走&quot;);</b>
+<b class="nc">&nbsp;        frame.setSize(600, 400);</b>
+<b class="nc">&nbsp;        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);</b>
+<b class="nc">&nbsp;        frame.setLayout(new FlowLayout());</b>
+&nbsp;
+<b class="nc">&nbsp;        String foutput = JOptionPane.showInputDialog(frame, &quot;请输入保存文件路径:&quot;);</b>
+<b class="nc">&nbsp;        if(foutput == null) {</b>
+&nbsp;            return;
+&nbsp;        }
+&nbsp;
+&nbsp;        // 创建按钮
+<b class="nc">&nbsp;        JButton nextButton = new JButton(&quot;继续游走&quot;);</b>
+<b class="nc">&nbsp;        JButton exitButton = new JButton(&quot;停止&quot;);</b>
+&nbsp;
+&nbsp;        // 创建文本标签
+<b class="nc">&nbsp;        JLabel textLabel = new JLabel(&quot;路径: &quot; + path);</b>
+<b class="nc">&nbsp;        textLabel.setHorizontalAlignment(SwingConstants.CENTER);</b>
+&nbsp;
+&nbsp;        // 添加按钮的动作监听器
+<b class="nc">&nbsp;        nextButton.addActionListener(e -&gt; {</b>
+<b class="nc">&nbsp;            try (FileWriter writer = new FileWriter(foutput, true)) {</b>
+&nbsp;
+<b class="nc">&nbsp;                if(current != null &amp;&amp; current.getOutDegree() &gt; 0) {</b>
+<b class="nc">&nbsp;                    path.append(current.getId()).append(&quot; -&gt; &quot;);</b>
+<b class="nc">&nbsp;                    writer.write(current.getId() + &quot; &quot;);</b>
+&nbsp;
+&nbsp;                    // Randomly select an edge
+<b class="nc">&nbsp;                    int index = random.nextInt(current.getOutDegree());</b>
+<b class="nc">&nbsp;                    Edge edge = current.getLeavingEdge(index);</b>
+&nbsp;
+<b class="nc">&nbsp;                    if (!visitedEdges.add(edge)) {</b>
+<b class="nc">&nbsp;                        JOptionPane.showMessageDialog(frame, &quot;到达已访问的边,停止随机游走&quot;);</b>
+<b class="nc">&nbsp;                        frame.dispose();</b>
+&nbsp;                    }
+&nbsp;
+<b class="nc">&nbsp;                    current = edge.getOpposite(current);</b>
+<b class="nc">&nbsp;                    textLabel.setText(&quot;Path: &quot; + path);</b>
+&nbsp;                }
+&nbsp;
+<b class="nc">&nbsp;                if (current != null &amp;&amp; current.getDegree() == 0) {</b>
+<b class="nc">&nbsp;                    JOptionPane.showMessageDialog(frame, &quot;该节点没有出边,结束游走&quot;);</b>
+<b class="nc">&nbsp;                    path.append(current.getId());</b>
+<b class="nc">&nbsp;                    writer.write(current.getId() + &quot;\n&quot;);</b>
+<b class="nc">&nbsp;                    frame.dispose();</b>
+&nbsp;                }
+&nbsp;                // 更新文本值并重新设置标签
+<b class="nc">&nbsp;                textLabel.setText(&quot;原始文本: &quot; + path);</b>
+<b class="nc">&nbsp;            } catch (IOException exception) {</b>
+<b class="nc">&nbsp;                JOptionPane.showMessageDialog(frame, exception.getMessage());</b>
+&nbsp;            }
+&nbsp;        });
+&nbsp;
+<b class="nc">&nbsp;        exitButton.addActionListener(e -&gt; {</b>
+&nbsp;            // 关闭窗口和程序
+<b class="nc">&nbsp;            frame.dispose();</b>
+&nbsp;        });
+&nbsp;
+&nbsp;        // 添加组件到窗口
+<b class="nc">&nbsp;        frame.getContentPane().add(textLabel);</b>
+<b class="nc">&nbsp;        frame.getContentPane().add(nextButton);</b>
+<b class="nc">&nbsp;        frame.getContentPane().add(exitButton);</b>
+&nbsp;        // 设置窗口可见
+<b class="nc">&nbsp;        frame.setVisible(true);</b>
+&nbsp;
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-14 17:31</div>
+</div>
+</body>
+</html>

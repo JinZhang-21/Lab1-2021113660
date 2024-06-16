@@ -1,0 +1,205 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > Util</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">cn.hit.sw.lab1.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: Util (cn.hit.sw.lab1.impl)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Util</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package cn.hit.sw.lab1.impl;
+&nbsp;
+&nbsp;import cn.hit.sw.entity.MyGraph;
+&nbsp;
+&nbsp;import java.io.*;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.Set;
+&nbsp;import java.util.regex.Matcher;
+&nbsp;import java.util.regex.Pattern;
+&nbsp;
+<b class="nc">&nbsp;public class Util {</b>
+&nbsp;    public static MyGraph getGraphFromFile(File file) throws FileNotFoundException {
+<b class="nc">&nbsp;        System.setProperty(&quot;org.graphstream.ui&quot;, &quot;swing&quot;);</b>
+&nbsp;        // 用于存储文件内容的字符串
+<b class="nc">&nbsp;        StringBuilder content = new StringBuilder();</b>
+&nbsp;
+<b class="nc">&nbsp;        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {</b>
+&nbsp;            String line;
+&nbsp;            // 逐行读取文件内容
+<b class="nc">&nbsp;            while ((line = reader.readLine()) != null) {</b>
+&nbsp;                // 将每行内容追加到StringBuilder中
+<b class="nc">&nbsp;                content.append(line);</b>
+<b class="nc">&nbsp;                content.append(&quot;\n&quot;); // 如果需要保留换行符，可以添加这行代码</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (IOException ignored) {</b>
+&nbsp;
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        StringBuilder result = new StringBuilder();</b>
+<b class="nc">&nbsp;        Pattern pattern = Pattern.compile(&quot;[a-zA-Z]+&quot;);</b>
+<b class="nc">&nbsp;        Matcher matcher = pattern.matcher(content.toString());</b>
+&nbsp;
+<b class="nc">&nbsp;        while (matcher.find()) {</b>
+<b class="nc">&nbsp;            if (!result.isEmpty()) {</b>
+<b class="nc">&nbsp;                result.append(&quot; &quot;);</b>
+&nbsp;            }
+<b class="nc">&nbsp;            result.append(matcher.group().toLowerCase());</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        MyGraph graph = new MyGraph(&quot;graph1&quot;);</b>
+<b class="nc">&nbsp;        String[] words = result.toString().split(&quot; &quot;);</b>
+<b class="nc">&nbsp;        Set&lt;String&gt; existNode = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (String word : words) {</b>
+<b class="nc">&nbsp;            if (!existNode.contains(word)) {</b>
+<b class="nc">&nbsp;                graph.addNode(word).setAttribute(&quot;ui.label&quot;, word);</b>
+<b class="nc">&nbsp;                existNode.add(word);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        Set&lt;String&gt; existEdge = new HashSet&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (int i = 0; i &lt; words.length - 1; i++) {</b>
+<b class="nc">&nbsp;            if(!existEdge.contains(words[i] + &quot;_&quot; + words[i + 1])) {</b>
+<b class="nc">&nbsp;                graph.addEdge(words[i] + &quot;_&quot; + words[i + 1], words[i], words[i + 1], true).setAttribute(&quot;ui.label&quot;, 1);</b>
+<b class="nc">&nbsp;                existEdge.add(words[i] + &quot;_&quot; + words[i + 1]);</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                int weight = (int)graph.getEdge(words[i] + &quot;_&quot; + words[i + 1]).getAttribute(&quot;ui.label&quot;);</b>
+<b class="nc">&nbsp;                graph.getEdge(words[i] + &quot;_&quot; + words[i + 1]).setAttribute(&quot;ui.label&quot;, weight + 1);</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        graph.setAttribute(&quot;ui.stylesheet&quot;, styleSheet());</b>
+<b class="nc">&nbsp;        graph.setAttribute(&quot;ui.antialias&quot;);</b>
+<b class="nc">&nbsp;        graph.setAttribute(&quot;ui.quality&quot;);</b>
+&nbsp;
+<b class="nc">&nbsp;        return graph;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private static  String styleSheet() {
+<b class="nc">&nbsp;        return &quot;node {&quot; +</b>
+&nbsp;                &quot;   fill-color: black;&quot; +
+&nbsp;                &quot;   size: 20px;&quot; +
+&nbsp;                &quot;   text-alignment: above;&quot; +
+&nbsp;                &quot;   text-size: 20;&quot; +
+&nbsp;                &quot;   text-color: red;&quot; +
+&nbsp;                &quot;   text-style: bold;&quot; +
+&nbsp;                &quot;   text-alignment: under;&quot; +
+&nbsp;                &quot;}&quot; +
+&nbsp;                &quot;edge {&quot; +
+&nbsp;                &quot;   fill-color: black;&quot; +
+&nbsp;                &quot;   size: 3px;&quot; +
+&nbsp;                &quot;   text-size: 20;&quot; +
+&nbsp;                &quot;   text-color: blue;&quot; +
+&nbsp;                &quot;   text-style: bold;&quot; +
+&nbsp;                &quot;   text-alignment: along;&quot; +
+&nbsp;                &quot;   text-offset: 0px, 10px;&quot; +
+&nbsp;                &quot;   arrow-size: 15px, 8px; arrow-shape: arrow;&quot; +
+&nbsp;                &quot;}&quot;;
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-14 17:31</div>
+</div>
+</body>
+</html>
